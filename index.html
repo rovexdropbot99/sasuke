@@ -1,106 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sasuke Gift</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Epic Gift Demo</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background: #111827;
-      color: white;
-      text-align: center;
-    }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #26345f, #080b16 65%);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .container {
-      width: 90%;
-      max-width: 400px;
-      padding: 30px;
-      border-radius: 25px;
-      background: #1f2937;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    }
+.app {
+  width: 92%;
+  max-width: 420px;
+  text-align: center;
+}
 
-    .gift {
-      font-size: 100px;
-      margin: 20px 0;
-      animation: float 2s infinite ease-in-out;
-    }
+.title {
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
 
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-12px);
-      }
-    }
+.demo {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #29304a;
+  color: #9aa7ff;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
 
-    h1 {
-      margin-bottom: 10px;
-    }
+.rocket {
+  font-size: 75px;
+  animation: rocket 2s infinite ease-in-out;
+}
 
-    p {
-      color: #cbd5e1;
-    }
+@keyframes rocket {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
 
-    button {
-      margin-top: 20px;
-      padding: 15px 35px;
-      border: none;
-      border-radius: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #7c3aed;
-      color: white;
-    }
+.gift-box {
+  margin: 20px auto;
+  width: 180px;
+  height: 150px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #5865f2, #7547e8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 85px;
+  box-shadow: 0 15px 45px rgba(70,80,255,.35);
+}
 
-    button:active {
-      transform: scale(0.95);
-    }
+.card {
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(10px);
+}
 
-    #reward {
-      display: none;
-      margin-top: 25px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-  </style>
+.amount {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 8px 0;
+}
+
+.ton {
+  color: #62a9ff;
+}
+
+button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #5865f2, #8b5cf6);
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+#result {
+  display: none;
+  margin-top: 18px;
+  padding: 15px;
+  border-radius: 15px;
+  background: rgba(34,197,94,.15);
+  color: #8affad;
+  font-weight: bold;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>🎁 Sasuke Gift</h1>
-    <p>You've received a gift!</p>
+<div class="app">
 
-    <div class="gift">🎁</div>
+  <div class="title">🚀 Epic Gift</div>
+  <div class="demo">DEMO MODE</div>
 
-    <button onclick="openGift()">OPEN GIFT</button>
+  <div class="rocket">🚀</div>
 
-    <div id="reward">
-      🎉 Congratulations! 🎉
-      <br><br>
-      Your gift has been opened!
+  <div class="gift-box">🎁</div>
+
+  <div class="card">
+    <div>Demo Gift Reward</div>
+
+    <div class="amount">
+      25 <span class="ton">TON</span>
+    </div>
+
+    <div>Virtual demo balance</div>
+
+    <button onclick="openGift()">
+      🎁 OPEN GIFT
+    </button>
+
+    <div id="result">
+      🎉 Gift Opened!<br>
+      +25 TON (DEMO)
     </div>
   </div>
 
-  <script>
-    function openGift() {
-      document.getElementById("reward").style.display = "block";
-    }
-  </script>
+</div>
+
+<script>
+function openGift() {
+  document.getElementById("result").style.display = "block";
+}
+</script>
 
 </body>
 </html>
