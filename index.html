@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rocket</title>
 
 <style>
@@ -10,9 +10,8 @@
 
 body{
   margin:0;
-  min-height:100vh;
   background:#080b16;
-  color:#fff;
+  color:white;
   font-family:Arial,sans-serif;
 }
 
@@ -20,16 +19,10 @@ body{
   width:92%;
   max-width:430px;
   margin:auto;
-  padding:20px 0 35px;
+  padding:20px 0;
 }
 
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo{
   font-size:27px;
   font-weight:900;
 }
@@ -45,7 +38,7 @@ body{
 .balance span{
   color:#55aaff;
   font-size:25px;
-  font-weight:800;
+  font-weight:bold;
 }
 
 .game{
@@ -56,27 +49,27 @@ body{
   border-radius:25px;
   background:
     radial-gradient(circle at 50% 45%,
-    #30477d 0%,
+    #30477d,
     #151d35 45%,
     #080b16 82%);
 }
 
 .multiplier{
   position:absolute;
-  top:70px;
+  top:65px;
   width:100%;
   text-align:center;
-  font-size:50px;
+  font-size:52px;
   font-weight:900;
 }
 
 .current{
   position:absolute;
-  top:135px;
+  top:130px;
   width:100%;
   text-align:center;
   color:#8fb7ff;
-  font-size:22px;
+  font-size:21px;
   font-weight:bold;
 }
 
@@ -86,7 +79,6 @@ body{
   bottom:35px;
   transform:translateX(-50%);
   font-size:68px;
-  z-index:3;
 }
 
 .flame{
@@ -99,7 +91,7 @@ body{
 
 .status{
   text-align:center;
-  margin:12px 0;
+  margin:12px;
   color:#aeb8d0;
 }
 
@@ -142,8 +134,8 @@ button:disabled{
 }
 
 .result{
-  text-align:center;
   margin-top:12px;
+  text-align:center;
   color:#8affb0;
   font-weight:bold;
 }
@@ -159,8 +151,8 @@ button:disabled{
   display:inline-block;
   margin:4px;
   padding:7px 9px;
-  border-radius:9px;
   background:#252c45;
+  border-radius:9px;
   color:#9eafff;
   font-size:13px;
 }
@@ -172,7 +164,7 @@ button:disabled{
 <div class="app">
 
   <div class="header">
-    <div class="logo">🚀 Rocket</div>
+    🚀 Rocket
   </div>
 
   <div class="balance">
@@ -201,30 +193,30 @@ button:disabled{
   </div>
 
   <div class="status" id="status">
-    Waiting for next round...
+    🚀 Starting...
   </div>
 
   <div class="panel">
 
-    <b>Enter Points</b>
+    <b>Points</b>
 
     <input
       id="amount"
       type="number"
       min="1"
-      placeholder="Enter Points before round starts"
+      placeholder="Enter Points"
     >
 
     <button
       id="join"
-      onclick="join()">
+      onclick="joinRound()">
       JOIN
     </button>
 
     <button
       id="claim"
       class="claim"
-      onclick="claim()"
+      onclick="claimReward()"
       disabled>
       CLAIM
     </button>
@@ -243,6 +235,7 @@ button:disabled{
 
 </div>
 
+
 <script>
 
 let balance = 1000;
@@ -252,17 +245,30 @@ let joined = false;
 let claimed = false;
 
 let amount = 0;
-let multiplier = 1;
 
+let multiplier = 1;
 let crashPoint = 10;
 
 let startTime = 0;
-let frame = null;
+let animation = null;
 
 
-/*
-  Start a new round
-*/
+/* =========================
+   RANDOM CRASH
+========================= */
+
+function getCrashPoint(){
+
+  return Number(
+    (2 + Math.random() * 298)
+    .toFixed(2)
+  );
+}
+
+
+/* =========================
+   START ROUND
+========================= */
 
 function startRound(){
 
@@ -275,13 +281,8 @@ function startRound(){
 
   multiplier = 1;
 
-  /*
-    Random crash point.
-    Virtual game only.
-  */
-
   crashPoint =
-    2 + Math.random() * 298;
+    getCrashPoint();
 
   startTime =
     performance.now();
@@ -292,7 +293,9 @@ function startRound(){
   document.getElementById("current")
     .innerText = "0 Points";
 
-  document.getElementById("status")document.getElementById("result")
+  document.getElementById("status")
+    .innerText =
+    "🚀 Rocket is flying...";document.getElementById("result")
     .innerText = "";
 
   document.getElementById("join")
@@ -301,40 +304,55 @@ function startRound(){
   document.getElementById("claim")
     .disabled = true;
 
-  frame =
-    requestAnimationFrame(run);
+  document.getElementById("amount")
+    .disabled = false;
+
+  animation =
+    requestAnimationFrame(updateRocket);
 }
 
 
-/*
-  Rocket movement
-  x များလာလေ မြန်လာလေ
-*/
+/* =========================
+   AUTO ROCKET
+========================= */
 
-function run(now){
+function updateRocket(now){
 
-  if(!running) return;
+  if(!running){
+    return;
+  }
 
   const elapsed =
     (now - startTime) / 1000;
 
+
   /*
-    Starts slow and accelerates.
+    Auto multiplier.
+
+    Starts slowly.
+    Gets faster as x increases.
   */
 
   multiplier =
-    Math.exp(elapsed * 0.45);
+    Math.exp(
+      elapsed * 0.45
+    );
 
+
+  /* Crash */
 
   if(multiplier >= crashPoint){
 
-    multiplier = crashPoint;
+    multiplier =
+      crashPoint;
 
-    crash();
+    crashRound();
 
     return;
   }
 
+
+  /* Show multiplier */
 
   document.getElementById("multiplier")
     .innerText =
@@ -342,24 +360,38 @@ function run(now){
 
 
   /*
-    Current virtual value
+    If joined:
+    10 Points
+
+    1x = 10
+    2x = 20
+    3x = 30
+    10x = 100
   */
 
   if(joined){
 
-    const current =
+    const value =
       Math.floor(
         amount * multiplier
       );
 
     document.getElementById("current")
       .innerText =
-      current + " Points";
+      value + " Points";
+
+  }else{
+
+    document.getElementById("current")
+      .innerText =
+      "0 Points";
   }
 
 
   /*
-    x များလေ Rocket ပိုမြန်
+    Rocket movement.
+
+    Higher x = faster movement.
   */
 
   const progress =
@@ -371,7 +403,6 @@ function run(now){
         crashPoint - 1
       )
     );
-
 
   const height =
     35 + progress * 280;
@@ -387,17 +418,22 @@ function run(now){
     (height - 18) + "px";
 
 
-  frame =
-    requestAnimationFrame(run);
+  animation =
+    requestAnimationFrame(
+      updateRocket
+    );
 }
 
 
-/*
-  Join
-  Round စသွားပြီးရင် amount မပြောင်းနိုင်
-*/
+/* =========================
+   JOIN
+========================= */
 
-function join(){
+function joinRound(){
+
+  /*
+    Rocket MUST already be running.
+  */
 
   if(!running){
 
@@ -408,7 +444,7 @@ function join(){
   if(joined){
 
     alert(
-      "You already joined this round."
+      "Already joined this round."
     );
 
     return;
@@ -450,10 +486,15 @@ function join(){
 
   joined = true;
 
-  document.getElementById("join")
-    .disabled = true;
+
+  /*
+    Lock amount after joining.
+  */
 
   document.getElementById("amount")
+    .disabled = true;
+
+  document.getElementById("join")
     .disabled = true;
 
   document.getElementById("claim")
@@ -461,15 +502,15 @@ function join(){
 
   document.getElementById("result")
     .innerText =
-    "✅ Joined";
+    "✅ Joined current round";
 }
 
 
-/*
-  Claim current virtual value
-*/
+/* =========================
+   CLAIM
+========================= */
 
-function claim(){
+function claimReward(){
 
   if(
     !running ||
@@ -509,19 +550,21 @@ function claim(){
 }
 
 
-/*
-  Crash
-*/
+/* =========================
+   CRASH
+========================= */
 
-function crash(){
+function crashRound(){
 
   running = false;
 
-  if(frame){
+  if(animation){
 
-    cancelAnimationFrame(frame);
+    cancelAnimationFrame(
+      animation
+    );
 
-    frame = null;
+    animation = null;
   }
 
 
@@ -550,17 +593,6 @@ function crash(){
   addHistory(crashPoint);
 
 
-  /*
-    Reset input for next round
-  */
-
-  document.getElementById("amount")
-    .disabled = false;
-
-  document.getElementById("amount")
-    .value = "";
-
-
   setTimeout(() => {
 
     document.getElementById("rocket")
@@ -569,74 +601,17 @@ function crash(){
     document.getElementById("flame")
       .style.bottom = "15px";
 
+    document.getElementById("amount")
+      .disabled = false;
+
+    document.getElementById("amount")
+      .value = "";
+
     document.getElementById("status")
       .innerText =
       "🚀 Next round...";
 
 
-    setTimeout(
-      startRound,
-      1500
-    );
-
-  },2500);
-}
-
-
-/*
-  Balance
-*/
-
-function updateBalance(){
-
-  document.getElementById("balance")
-    .innerText =
-    Math.floor(balance) +
-    " Points";
-}
-
-
-/*
-  History
-*/
-
-function addHistory(value){
-
-  const item =
-    document.createElement("span");
-
-  item.innerText =
-    value.toFixed(2) + "x";
-
-  document.getElementById("history")
-    .prepend(item);
-
-
-  const list =
-    document.getElementById("history");
-
-
-  while(list.children.length > 8){
-
-    list.removeChild(
-      list.lastChild
-    );
-  }
-}
-
-
-/*
-  Auto start
-*/
-
-updateBalance();
-
-setTimeout(
-  startRound,
-  1000
-);
-
-</script></body>
-</html>
-    .innerText =
-    "🚀 Rocket is flying...";
+    /*
+      AUTO START
+    */
