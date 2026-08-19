@@ -2,125 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Rocket Demo</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:#070a15;
+  color:#fff;
+  font-family:Arial,sans-serif;
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #080b18;
-  color: white;
-  font-family: Arial, sans-serif;
+.app{
+  width:92%;
+  max-width:430px;
+  margin:auto;
+  padding:20px 0 35px;
 }
 
-.app {
-  width: 92%;
-  max-width: 430px;
-  margin: auto;
-  padding: 25px 0;
-  text-align: center;
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.logo{
+  font-size:26px;
+  font-weight:900;
 }
 
-.logo {
-  font-size: 25px;
-  font-weight: 800;
+.badge{
+  background:#242a43;
+  color:#91a0ff;
+  padding:6px 10px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:bold;
 }
 
-.badge {
-  background: #252b45;
-  color: #8ea2ff;
-  padding: 6px 10px;
-  border-radius: 12px;
-  font-size: 12px;
+.balance{
+  margin-top:15px;
+  padding:15px;
+  background:#141a2c;
+  border-radius:18px;
+  text-align:center;
 }
 
-.balance {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 18px;
-  background: #141a2d;
+.balance span{
+  color:#55aaff;
+  font-size:25px;
+  font-weight:bold;
 }
 
-.balance span {
-  color: #55aaff;
-  font-size: 25px;
-  font-weight: bold;
-}
-
-.game {
-  height: 360px;
-  margin-top: 18px;
-  border-radius: 25px;
+.game{
+  position:relative;
+  height:370px;
+  margin-top:15px;
+  overflow:hidden;
+  border-radius:25px;
   background:
-    radial-gradient(circle at center, #263866 0%, #11182d 45%, #080b18 75%);
-  position: relative;
-  overflow: hidden;
+    radial-gradient(circle at 50% 45%,
+    #293b6e 0%,
+    #121a31 48%,
+    #070a15 80%);
 }
 
-.rocket {
-  position: absolute;
-  left: 50%;
-  bottom: 45px;
-  transform: translateX(-50%);
-  font-size: 70px;
-  transition: bottom .15s linear;
+.multiplier{
+  position:absolute;
+  top:75px;
+  width:100%;
+  text-align:center;
+  font-size:52px;
+  font-weight:900;
+  z-index:2;
 }
 
-.multiplier {
-  position: absolute;
-  top: 105px;
-  width: 100%;
-  font-size: 48px;
-  font-weight: 900;
+.rocket{
+  position:absolute;
+  left:50%;
+  bottom:35px;
+  transform:translateX(-50%);
+  font-size:70px;
+  transition:bottom .08s linear;
+  z-index:3;
 }
 
-.status {
-  margin-top: 12px;
-  color: #aab4d0;
+.status{
+  text-align:center;
+  margin:12px 0;
+  color:#aeb8d5;
 }
 
-button {
-  width: 100%;
-  margin-top: 15px;
-  padding: 16px;
-  border: none;
-  border-radius: 15px;
-  background: #5865f2;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
+.panel{
+  margin-top:15px;
+  padding:17px;
+  border-radius:18px;
+  background:#141a2c;
 }
 
-button:active {
-  transform: scale(.97);
+input{
+  width:100%;
+  margin-top:9px;
+  padding:14px;
+  border:0;
+  border-radius:12px;
+  background:#252c46;
+  color:white;
+  font-size:16px;
+  outline:none;
 }
 
-.admin {
-  display: none;
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 20px;
-  background: #151b30;
-  text-align: left;
+button{
+  width:100%;
+  margin-top:12px;
+  padding:15px;
+  border:0;
+  border-radius:14px;
+  background:#5865f2;
+  color:white;
+  font-size:17px;
+  font-weight:bold;
 }
 
-.admin h2 {
-  margin-top: 0;
+button:active{
+  transform:scale(.97);
 }
 
-.admin button {
-  margin-top: 10px;
+.admin{
+  display:none;
+}
+
+.result{
+  margin-top:10px;
+  color:#8affb0;
+  font-weight:bold;
+  text-align:center;
+}
+
+.small{
+  color:#99a4c2;
+  font-size:13px;
+  line-height:1.5;
 }
 </style>
 </head>
@@ -136,7 +161,7 @@ button:active {
 
   <div class="balance">
     Demo Balance<br>
-    <span id="balance">100.00 TON</span>
+    <span id="balance">1000 Points</span>
   </div>
 
   <div class="game">
@@ -152,34 +177,72 @@ button:active {
   </div>
 
   <div class="status" id="status">
-    Ready to start
+    Starting next round...
   </div>
 
-  <button id="startButton" onclick="startRocket()">
-    🚀 START DEMO
+  <div class="panel">
+
+    <b>🎮 Demo Points</b>
+
+    <input
+      id="amount"
+      type="number"
+      min="1"
+      placeholder="Enter demo points"
+    >
+
+    <button onclick="joinRound()">
+      🎮 JOIN CURRENT ROUND
+    </button>
+
+    <div class="result" id="result"></div>
+
+  </div>
+
+  <button onclick="toggleAdmin()">
+    👑 Admin Demo Panel
   </button>
 
-  <button onclick="showAdmin()">
-    👑 Admin Demo
-  </button>
-
-  <div class="admin" id="adminPanel">
+  <div class="panel admin" id="admin">
 
     <h2>👑 Admin Panel</h2>
 
-    <p>Demo Controls</p>
+    <div class="small">
+      Choose the demo crash mode.
+      This is only a local demo setting.
+    </div>
 
-    <button onclick="addBalance()">
-      + Add 10 TON
+    <label>
+      Crash Mode
+      <select id="mode"
+        style="
+        width:100%;
+        margin-top:9px;
+        padding:14px;
+        border:0;
+        border-radius:12px;
+        background:#252c46;
+        color:white;
+        font-size:16px;">
+        <option value="random">Random 1x - 300x</option>
+        <option value="fixed">Fixed Multiplier</option>
+      </select>
+    </label>
+
+    <input
+      id="fixedCrash"
+      type="number"
+      min="1"
+      max="300"
+      value="20"
+      placeholder="Example: 20"
+    >
+
+    <button onclick="saveAdminSettings()">
+      💾 SAVE SETTINGS
     </button>
 
-    <button onclick="resetBalance()">
-      Reset Balance
-    </button>
-
-    <button onclick="closeAdmin()">
-      Close Admin
-    </button>
+    <p id="adminStatus"></p>
 
   </div>
 
@@ -187,89 +250,296 @@ button:active {
 
 <script>
 
-let balance = 100;
-let running = false;
+let balance = 1000;
 
-function startRocket() {
+let roundRunning = false;
+let joinedAmount = 0;
 
-  if (running) return;
+let crashMode = "random";
+let fixedCrash = 20;
 
-  running = true;
+let crashPoint = 2;
+let multiplier = 1;
 
-  let multiplier = 1.00;
-  let rocketHeight = 45;
+let startTime = 0;
+let animationFrame = null;
 
-  document.getElementById("status").innerText =
-    "Rocket is flying...";
+const ROUND_DELAY = 3000;
 
-  document.getElementById("startButton").disabled = true;
+function updateBalance(){
 
-  const timer = setInterval(() => {
+  document.getElementById("balance")
+    .innerText =
+    Math.floor(balance) + " Points";
+}function randomCrashPoint(){
 
-    multiplier += 0.05;
+  /*
+    Demo random crash point:
+    1x - 300x
+  */
 
-    rocketHeight += 2;
-
-    document.getElementById("multiplier").innerText =
-      multiplier.toFixed(2) + "x";
-
-    document.getElementById("rocket").style.bottom =
-      rocketHeight + "px";
-
-    // Demo crash point
-    if (multiplier >= 3.00) {
-
-      clearInterval(timer);
-
-      document.getElementById("status").innerText =
-        "💥 Demo Rocket Finished!";
-
-      running = false;
-
-      document.getElementById("startButton").disabled = false;
-
-      setTimeout(resetRocket, 2000);
-    }
-
-  }, 120);
-
+  return Number(
+    (1 + Math.random() * 299).toFixed(2)
+  );
 }
 
-function resetRocket() {
+function getCrashPoint(){
 
-  document.getElementById("multiplier").innerText =
+  if(crashMode === "fixed"){
+    return Math.min(
+      300,
+      Math.max(1, fixedCrash)
+    );
+  }
+
+  return randomCrashPoint();
+}
+
+function startRound(){
+
+  if(roundRunning) return;
+
+  roundRunning = true;
+
+  multiplier = 1;
+
+  crashPoint = getCrashPoint();
+
+  startTime = performance.now();
+
+  document.getElementById("status")
+    .innerText =
+    "🚀 Rocket is flying...";
+
+  document.getElementById("result")
+    .innerText = "";
+
+  animateRocket();
+}
+
+function animateRocket(){
+
+  if(!roundRunning) return;
+
+  const now = performance.now();
+
+  const elapsed =
+    (now - startTime) / 1000;
+
+  /*
+    Demo speed:
+    approximately 1x -> crash point
+  */
+
+  multiplier =
+    1 + elapsed * 1.5;
+
+  if(multiplier >= crashPoint){
+
+    multiplier = crashPoint;
+
+    finishRound();
+
+    return;
+  }
+
+  document.getElementById("multiplier")
+    .innerText =
+    multiplier.toFixed(2) + "x";
+
+  /*
+    Rocket movement
+  */
+
+  const progress =
+    Math.min(
+      1,
+      (multiplier - 1) /
+      Math.max(1, crashPoint - 1)
+    );
+
+  const bottom =
+    35 + progress * 260;
+
+  document.getElementById("rocket")
+    .style.bottom =
+    bottom + "px";
+
+  animationFrame =
+    requestAnimationFrame(animateRocket);
+}
+
+function finishRound(){
+
+  roundRunning = false;
+
+  if(animationFrame){
+    cancelAnimationFrame(animationFrame);
+  }
+
+  document.getElementById("multiplier")
+    .innerText =
+    crashPoint.toFixed(2) + "x";
+
+  document.getElementById("status")
+    .innerText =
+    "💥 Round finished at " +
+    crashPoint.toFixed(2) +
+    "x";
+
+  /*
+    Demo only.
+    If user joined the round,
+    show a simulated result.
+  */
+
+  if(joinedAmount > 0){
+
+    const demoResult =
+      Math.floor(
+        joinedAmount * crashPoint
+      );
+
+    balance += demoResult;
+
+    updateBalance();
+
+    document.getElementById("result")
+      .innerText =
+      "🎉 Demo result: +" +
+      demoResult +
+      " Points";
+
+    joinedAmount = 0;
+  }
+
+  setTimeout(resetRound, ROUND_DELAY);
+}
+
+function resetRound(){
+
+  document.getElementById("multiplier")
+    .innerText =
     "1.00x";
 
-  document.getElementById("rocket").style.bottom =
-    "45px";
+  document.getElementById("rocket")
+    .style.bottom =
+    "35px";
 
-  document.getElementById("status").innerText =
-    "Ready to start";
+  document.getElementById("status")
+    .innerText =
+    "🚀 New round starting...";
+
+  setTimeout(startRound, 1200);
 }
 
-function showAdmin() {
-  document.getElementById("adminPanel").style.display =
-    "block";
+function joinRound(){
+
+  if(!roundRunning){
+
+    alert(
+      "Please wait for the next round."
+    );
+
+    return;
+  }
+
+  if(joinedAmount > 0){
+
+    alert(
+      "You already joined this round."
+    );
+
+    return;
+  }
+
+  const amount =
+    Number(
+      document.getElementById("amount").value
+    );
+
+  if(!amount || amount <= 0){
+
+    alert(
+      "Enter a demo amount."
+    );
+
+    return;
+  }
+
+  if(amount > balance){
+
+    alert(
+      "Not enough demo points."
+    );
+
+    return;
+  }
+
+  balance -= amount;
+
+  joinedAmount = amount;
+
+  updateBalance();
+
+  document.getElementById("result")
+    .innerText =
+    "✅ Joined current demo round";
+
 }
 
-function closeAdmin() {
-  document.getElementById("adminPanel").style.display =
-    "none";
+function toggleAdmin(){
+
+  const panel =
+    document.getElementById("admin");
+
+  panel.style.display =
+    panel.style.display === "block"
+    ? "none"
+    : "block";
 }
 
-function addBalance() {
+function saveAdminSettings(){
 
-  balance += 10;document.getElementById("balance").innerText =
-    balance.toFixed(2) + " TON";
+  const mode =
+    document.getElementById("mode").value;
+
+  const value =
+    Number(
+      document.getElementById("fixedCrash").value
+    );
+
+  crashMode = mode;
+
+  if(mode === "fixed"){
+
+    if(!value  value < 1  value > 300){
+
+      alert(
+        "Fixed multiplier must be 1x - 300x."
+      );
+
+      return;
+    }
+
+    fixedCrash = value;
+  }
+
+  document.getElementById("adminStatus")
+    .innerText =
+    mode === "random"
+    ? "✅ Random 1x - 300x enabled."
+    : "✅ Fixed crash set to " +
+      fixedCrash.toFixed(2) + "x";
 }
 
-function resetBalance() {
+updateBalance();
 
-  balance = 100;
+/*
+  AUTO START
+*/
 
-  document.getElementById("balance").innerText =
-    balance.toFixed(2) + " TON";
-}
+setTimeout(startRound, 1500);
 
 </script>
 
