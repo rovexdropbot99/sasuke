@@ -4,18 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sasuke Gift</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+      text-align: center;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 400px;
+      padding: 30px;
+      border-radius: 25px;
+      background: #1f2937;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .gift {
+      font-size: 100px;
+      margin: 20px 0;
+      animation: float 2s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #cbd5e1;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 15px 35px;
+      border: none;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #7c3aed;
+      color: white;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    #reward {
+      display: none;
+      margin-top: 25px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>🎁 Sasuke Gift</h1>
-  <p>Welcome to Sasuke Gift!</p>
 
-  <button onclick="showMessage()">Open Gift</button>
+  <div class="container">
+    <h1>🎁 Sasuke Gift</h1>
+    <p>You've received a gift!</p>
+
+    <div class="gift">🎁</div>
+
+    <button onclick="openGift()">OPEN GIFT</button>
+
+    <div id="reward">
+      🎉 Congratulations! 🎉
+      <br><br>
+      Your gift has been opened!
+    </div>
+  </div>
 
   <script>
-    function showMessage() {
-      alert("🎁 Gift opened!");
+    function openGift() {
+      document.getElementById("reward").style.display = "block";
     }
   </script>
+
 </body>
 </html>
