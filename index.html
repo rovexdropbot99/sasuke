@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rocket Demo</title>
+<title>Rocket</title>
 
 <style>
 *{box-sizing:border-box}
@@ -30,17 +30,8 @@ body{
 }
 
 .logo{
-  font-size:26px;
+  font-size:27px;
   font-weight:900;
-}
-
-.demo{
-  padding:6px 10px;
-  border-radius:12px;
-  background:#242a42;
-  color:#91a2ff;
-  font-size:11px;
-  font-weight:bold;
 }
 
 .balance{
@@ -79,13 +70,23 @@ body{
   font-weight:900;
 }
 
+.current{
+  position:absolute;
+  top:135px;
+  width:100%;
+  text-align:center;
+  color:#8fb7ff;
+  font-size:22px;
+  font-weight:bold;
+}
+
 .rocket{
   position:absolute;
   left:50%;
   bottom:35px;
   transform:translateX(-50%);
   font-size:68px;
-  transition:bottom .08s linear;
+  z-index:3;
 }
 
 .flame{
@@ -109,7 +110,7 @@ body{
   border-radius:18px;
 }
 
-input,select{
+input{
   width:100%;
   margin-top:9px;
   padding:14px;
@@ -140,21 +141,11 @@ button:disabled{
   background:#20a866;
 }
 
-.admin{
-  display:none;
-}
-
 .result{
   text-align:center;
   margin-top:12px;
   color:#8affb0;
   font-weight:bold;
-}
-
-.small{
-  color:#9ba6c3;
-  font-size:13px;
-  line-height:1.5;
 }
 
 .history{
@@ -182,11 +173,10 @@ button:disabled{
 
   <div class="header">
     <div class="logo">🚀 Rocket</div>
-    <div class="demo">DEMO MODE</div>
   </div>
 
   <div class="balance">
-    Demo Balance<br>
+    Balance<br>
     <span id="balance">1000 Points</span>
   </div>
 
@@ -194,6 +184,10 @@ button:disabled{
 
     <div class="multiplier" id="multiplier">
       1.00x
+    </div>
+
+    <div class="current" id="current">
+      0 Points
     </div>
 
     <div class="rocket" id="rocket">
@@ -207,32 +201,32 @@ button:disabled{
   </div>
 
   <div class="status" id="status">
-    🚀 Starting next round...
+    Waiting for next round...
   </div>
 
   <div class="panel">
 
-    <b>🎮 Demo Amount</b>
+    <b>Enter Points</b>
 
     <input
       id="amount"
       type="number"
       min="1"
-      placeholder="Enter Demo Points"
+      placeholder="Enter Points before round starts"
     >
 
     <button
-      id="joinButton"
-      onclick="joinRound()">
-      🚀 START DEMO
+      id="join"
+      onclick="join()">
+      JOIN
     </button>
 
     <button
-      id="claimButton"
+      id="claim"
       class="claim"
-      onclick="claimReward()"
+      onclick="claim()"
       disabled>
-      💰 CLAIM
+      CLAIM
     </button>
 
     <div
@@ -243,48 +237,9 @@ button:disabled{
   </div>
 
   <div class="history">
-    <b>📊 Recent Rounds</b>
+    <b>Recent Rounds</b>
     <div id="history"></div>
   </div>
-
-  <button onclick="toggleAdmin()">
-    👑 Admin Demo Panel
-  </button>
-
-  <div class="panel admin" id="admin">
-
-    <h2>👑 Admin Panel</h2>
-
-    <div class="small">
-      Demo-only settings.
-    </div>
-
-    <select id="mode">
-
-      <option value="random">
-        Random Demo Crash
-      </option>
-
-      <option value="fixed">
-        Fixed Demo Crash
-      </option>
-
-    </select>
-
-    <input
-      id="fixedCrash"
-      type="number"
-      min="2"
-      max="300"
-      value="20"
-      placeholder="Example: 20"
-    >
-
-    <button onclick="saveAdmin()">
-      💾 SAVE SETTINGS
-    </button>
-
-    <p id="adminStatus"></p></div>
 
 </div>
 
@@ -298,68 +253,16 @@ let claimed = false;
 
 let amount = 0;
 let multiplier = 1;
-let crashPoint = 20;
 
-let mode = "random";
+let crashPoint = 10;
 
 let startTime = 0;
 let frame = null;
 
 
-/* -------------------------
-   BALANCE
-------------------------- */
-
-function updateBalance(){
-
-  document.getElementById("balance")
-    .innerText =
-    Math.floor(balance) +
-    " Points";
-}
-
-
-/* -------------------------
-   RANDOM CRASH
-------------------------- */
-
-function randomCrash(){
-
-  return Number(
-    (2 + Math.random() * 298)
-      .toFixed(2)
-  );
-}
-
-
-/* -------------------------
-   CRASH POINT
-------------------------- */
-
-function getCrashPoint(){
-
-  if(mode === "fixed"){
-
-    return Math.max(
-      2,
-      Math.min(
-        300,
-        Number(
-          document.getElementById(
-            "fixedCrash"
-          ).value
-        )
-      )
-    );
-  }
-
-  return randomCrash();
-}
-
-
-/* -------------------------
-   START ROUND
-------------------------- */
+/*
+  Start a new round
+*/
 
 function startRound(){
 
@@ -372,41 +275,41 @@ function startRound(){
 
   multiplier = 1;
 
+  /*
+    Random crash point.
+    Virtual game only.
+  */
+
   crashPoint =
-    getCrashPoint();
+    2 + Math.random() * 298;
 
   startTime =
     performance.now();
 
-  document.getElementById(
-    "multiplier"
-  ).innerText = "1.00x";
+  document.getElementById("multiplier")
+    .innerText = "1.00x";
 
-  document.getElementById(
-    "status"
-  ).innerText =
-    "🚀 Rocket is flying...";
+  document.getElementById("current")
+    .innerText = "0 Points";
 
-  document.getElementById(
-    "result"
-  ).innerText = "";
+  document.getElementById("status")document.getElementById("result")
+    .innerText = "";
 
-  document.getElementById(
-    "claimButton"
-  ).disabled = true;
+  document.getElementById("join")
+    .disabled = false;
 
-  document.getElementById(
-    "joinButton"
-  ).disabled = false;
+  document.getElementById("claim")
+    .disabled = true;
 
   frame =
     requestAnimationFrame(run);
 }
 
 
-/* -------------------------
-   ROCKET
-------------------------- */
+/*
+  Rocket movement
+  x များလာလေ မြန်လာလေ
+*/
 
 function run(now){
 
@@ -415,19 +318,17 @@ function run(now){
   const elapsed =
     (now - startTime) / 1000;
 
-
   /*
-    Slower multiplier.
+    Starts slow and accelerates.
   */
 
   multiplier =
-    1 + elapsed * 0.35;
+    Math.exp(elapsed * 0.45);
 
 
   if(multiplier >= crashPoint){
 
-    multiplier =
-      crashPoint;
+    multiplier = crashPoint;
 
     crash();
 
@@ -435,15 +336,30 @@ function run(now){
   }
 
 
-  document.getElementById(
-    "multiplier"
-  ).innerText =
-    multiplier.toFixed(2) +
-    "x";
+  document.getElementById("multiplier")
+    .innerText =
+    multiplier.toFixed(2) + "x";
 
 
   /*
-    Rocket slowly moves upward.
+    Current virtual value
+  */
+
+  if(joined){
+
+    const current =
+      Math.floor(
+        amount * multiplier
+      );
+
+    document.getElementById("current")
+      .innerText =
+      current + " Points";
+  }
+
+
+  /*
+    x များလေ Rocket ပိုမြန်
   */
 
   const progress =
@@ -461,15 +377,13 @@ function run(now){
     35 + progress * 280;
 
 
-  document.getElementById(
-    "rocket"
-  ).style.bottom =
+  document.getElementById("rocket")
+    .style.bottom =
     height + "px";
 
 
-  document.getElementById(
-    "flame"
-  ).style.bottom =
+  document.getElementById("flame")
+    .style.bottom =
     (height - 18) + "px";
 
 
@@ -478,17 +392,14 @@ function run(now){
 }
 
 
-/* -------------------------
-   JOIN
-------------------------- */
+/*
+  Join
+  Round စသွားပြီးရင် amount မပြောင်းနိုင်
+*/
 
-function joinRound(){
+function join(){
 
   if(!running){
-
-    alert(
-      "Wait for the next round."
-    );
 
     return;
   }
@@ -497,7 +408,7 @@ function joinRound(){
   if(joined){
 
     alert(
-      "You already joined."
+      "You already joined this round."
     );
 
     return;
@@ -506,16 +417,15 @@ function joinRound(){
 
   const value =
     Number(
-      document.getElementById(
-        "amount"
-      ).value
+      document.getElementById("amount")
+        .value
     );
 
 
   if(!value || value <= 0){
 
     alert(
-      "Enter Demo Points."
+      "Enter Points."
     );
 
     return;
@@ -525,7 +435,7 @@ function joinRound(){
   if(value > balance){
 
     alert(
-      "Not enough Demo Points."
+      "Not enough Points."
     );
 
     return;
@@ -540,34 +450,32 @@ function joinRound(){
 
   joined = true;
 
-  document.getElementById(
-    "joinButton"
-  ).disabled = true;
+  document.getElementById("join")
+    .disabled = true;
 
-  document.getElementById(
-    "claimButton"
-  ).disabled = false;
+  document.getElementById("amount")
+    .disabled = true;
 
-  document.getElementById(
-    "result"
-  ).innerText =
-    "✅ Demo round joined";
+  document.getElementById("claim")
+    .disabled = false;
+
+  document.getElementById("result")
+    .innerText =
+    "✅ Joined";
 }
 
 
-/* -------------------------
-   CLAIM
-------------------------- */
+/*
+  Claim current virtual value
+*/
 
-function claimReward(){
+function claim(){
 
-  if(!running || !joined){
-
-    return;
-  }
-
-
-  if(claimed){
+  if(
+    !running ||
+    !joined ||
+    claimed
+  ){
 
     return;
   }
@@ -575,10 +483,6 @@ function claimReward(){
 
   claimed = true;
 
-
-  /*
-    Demo calculation only.
-  */
 
   const reward =
     Math.floor(
@@ -591,25 +495,23 @@ function claimReward(){
   updateBalance();
 
 
-  document.getElementById(
-    "claimButton"
-  ).disabled = true;
+  document.getElementById("claim")
+    .disabled = true;
 
 
-  document.getElementById(
-    "result"
-  ).innerText =
-    "🎉 Claimed " +
+  document.getElementById("result")
+    .innerText =
+    "✅ Claimed " +
     reward +
-    " Demo Points at " +
+    " Points at " +
     multiplier.toFixed(2) +
     "x";
 }
 
 
-/* -------------------------
-   CRASH
-------------------------- */
+/*
+  Crash
+*/
 
 function crash(){
 
@@ -617,64 +519,58 @@ function crash(){
 
   if(frame){
 
-    cancelAnimationFrame(
-      frame
-    );
+    cancelAnimationFrame(frame);
 
     frame = null;
-  }document.getElementById(
-    "multiplier"
-  ).innerText =
-    crashPoint.toFixed(2) +
-    "x";
+  }
 
 
-  document.getElementById(
-    "status"
-  ).innerText =
-    "💥 CRASH " +
-    crashPoint.toFixed(2) +
-    "x";
+  document.getElementById("multiplier")
+    .innerText =
+    crashPoint.toFixed(2) + "x";
 
 
-  document.getElementById(
-    "claimButton"
-  ).disabled = true;
+  document.getElementById("status")
+    .innerText =
+    "💥 CRASH";
+
+
+  document.getElementById("claim")
+    .disabled = true;
 
 
   if(joined && !claimed){
 
-    document.getElementById(
-      "result"
-    ).innerText =
-      "💥 Crash! Demo round ended.";
+    document.getElementById("result")
+      .innerText =
+      "💥 Crash! Round ended.";
   }
 
 
-  addHistory(
-    crashPoint
-  );
+  addHistory(crashPoint);
 
 
   /*
-    AUTO NEXT ROUND
+    Reset input for next round
   */
+
+  document.getElementById("amount")
+    .disabled = false;
+
+  document.getElementById("amount")
+    .value = "";
+
 
   setTimeout(() => {
 
-    document.getElementById(
-      "rocket"
-    ).style.bottom =
-      "35px";
+    document.getElementById("rocket")
+      .style.bottom = "35px";
 
-    document.getElementById(
-      "flame"
-    ).style.bottom =
-      "15px";
+    document.getElementById("flame")
+      .style.bottom = "15px";
 
-    document.getElementById(
-      "status"
-    ).innerText =
+    document.getElementById("status")
+      .innerText =
       "🚀 Next round...";
 
 
@@ -687,35 +583,40 @@ function crash(){
 }
 
 
-/* -------------------------
-   HISTORY
-------------------------- */
+/*
+  Balance
+*/
+
+function updateBalance(){
+
+  document.getElementById("balance")
+    .innerText =
+    Math.floor(balance) +
+    " Points";
+}
+
+
+/*
+  History
+*/
 
 function addHistory(value){
 
   const item =
-    document.createElement(
-      "span"
-    );
+    document.createElement("span");
 
   item.innerText =
-    value.toFixed(2) +
-    "x";
+    value.toFixed(2) + "x";
 
-  document.getElementById(
-    "history"
-  ).prepend(item);
+  document.getElementById("history")
+    .prepend(item);
 
 
   const list =
-    document.getElementById(
-      "history"
-    );
+    document.getElementById("history");
 
 
-  while(
-    list.children.length > 8
-  ){
+  while(list.children.length > 8){
 
     list.removeChild(
       list.lastChild
@@ -724,71 +625,9 @@ function addHistory(value){
 }
 
 
-/* -------------------------
-   ADMIN
-------------------------- */
-
-function toggleAdmin(){
-
-  const panel =
-    document.getElementById(
-      "admin"
-    );
-
-
-  panel.style.display =
-    panel.style.display ===
-    "block"
-      ? "none"
-      : "block";
-}
-
-
-function saveAdmin(){
-
-  mode =
-    document.getElementById(
-      "mode"
-    ).value;
-
-
-  if(mode === "fixed"){
-
-    const value =
-      Number(
-        document.getElementById(
-          "fixedCrash"
-        ).value
-      );
-
-
-    if(
-      !value ||
-      value < 2 ||
-      value > 300
-    ){
-
-      alert(
-        "Use 2x - 300x."
-      );
-
-      return;
-    }
-  }
-
-
-  document.getElementById(
-    "adminStatus"
-  ).innerText =
-    mode === "random"
-      ? "✅ Random Demo mode saved."
-      : "✅ Fixed Demo mode saved.";
-}
-
-
-/* -------------------------
-   START AUTOMATICALLY
-------------------------- */
+/*
+  Auto start
+*/
 
 updateBalance();
 
@@ -797,7 +636,7 @@ setTimeout(
   1000
 );
 
-</script>
-
-</body>
+</script></body>
 </html>
+    .innerText =
+    "🚀 Rocket is flying...";
