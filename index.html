@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Epic Gift Demo</title>
+<title>Rocket Demo</title>
 
 <style>
 * {
@@ -13,102 +13,114 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at top, #26345f, #080b16 65%);
+  background: #080b18;
   color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: Arial, sans-serif;
 }
 
 .app {
   width: 92%;
-  max-width: 420px;
+  max-width: 430px;
+  margin: auto;
+  padding: 25px 0;
   text-align: center;
 }
 
-.title {
-  font-size: 30px;
-  font-weight: 800;
-  margin-bottom: 8px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.demo {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  background: #29304a;
-  color: #9aa7ff;
-  font-size: 13px;
-  margin-bottom: 25px;
+.logo {
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.badge {
+  background: #252b45;
+  color: #8ea2ff;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.balance {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 18px;
+  background: #141a2d;
+}
+
+.balance span {
+  color: #55aaff;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.game {
+  height: 360px;
+  margin-top: 18px;
+  border-radius: 25px;
+  background:
+    radial-gradient(circle at center, #263866 0%, #11182d 45%, #080b18 75%);
+  position: relative;
+  overflow: hidden;
 }
 
 .rocket {
-  font-size: 75px;
-  animation: rocket 2s infinite ease-in-out;
+  position: absolute;
+  left: 50%;
+  bottom: 45px;
+  transform: translateX(-50%);
+  font-size: 70px;
+  transition: bottom .15s linear;
 }
 
-@keyframes rocket {
-  0%,100% { transform: translateY(0) rotate(-5deg); }
-  50% { transform: translateY(-15px) rotate(5deg); }
+.multiplier {
+  position: absolute;
+  top: 105px;
+  width: 100%;
+  font-size: 48px;
+  font-weight: 900;
 }
 
-.gift-box {
-  margin: 20px auto;
-  width: 180px;
-  height: 150px;
-  border-radius: 22px;
-  background: linear-gradient(145deg, #5865f2, #7547e8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 85px;
-  box-shadow: 0 15px 45px rgba(70,80,255,.35);
-}
-
-.card {
-  padding: 20px;
-  border-radius: 22px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.12);
-  backdrop-filter: blur(10px);
-}
-
-.amount {
-  font-size: 34px;
-  font-weight: 800;
-  margin: 8px 0;
-}
-
-.ton {
-  color: #62a9ff;
+.status {
+  margin-top: 12px;
+  color: #aab4d0;
 }
 
 button {
   width: 100%;
-  margin-top: 18px;
+  margin-top: 15px;
   padding: 16px;
-  border: 0;
-  border-radius: 16px;
-  background: linear-gradient(90deg, #5865f2, #8b5cf6);
+  border: none;
+  border-radius: 15px;
+  background: #5865f2;
   color: white;
   font-size: 18px;
-  font-weight: 800;
-  cursor: pointer;
+  font-weight: bold;
 }
 
 button:active {
   transform: scale(.97);
 }
 
-#result {
+.admin {
   display: none;
-  margin-top: 18px;
-  padding: 15px;
-  border-radius: 15px;
-  background: rgba(34,197,94,.15);
-  color: #8affad;
-  font-weight: bold;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #151b30;
+  text-align: left;
+}
+
+.admin h2 {
+  margin-top: 0;
+}
+
+.admin button {
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -117,38 +129,148 @@ button:active {
 
 <div class="app">
 
-  <div class="title">🚀 Epic Gift</div>
-  <div class="demo">DEMO MODE</div>
+  <div class="header">
+    <div class="logo">🚀 Rocket</div>
+    <div class="badge">DEMO MODE</div>
+  </div>
 
-  <div class="rocket">🚀</div>
+  <div class="balance">
+    Demo Balance<br>
+    <span id="balance">100.00 TON</span>
+  </div>
 
-  <div class="gift-box">🎁</div>
+  <div class="game">
 
-  <div class="card">
-    <div>Demo Gift Reward</div>
-
-    <div class="amount">
-      25 <span class="ton">TON</span>
+    <div class="multiplier" id="multiplier">
+      1.00x
     </div>
 
-    <div>Virtual demo balance</div>
+    <div class="rocket" id="rocket">
+      🚀
+    </div>
 
-    <button onclick="openGift()">
-      🎁 OPEN GIFT
+  </div>
+
+  <div class="status" id="status">
+    Ready to start
+  </div>
+
+  <button id="startButton" onclick="startRocket()">
+    🚀 START DEMO
+  </button>
+
+  <button onclick="showAdmin()">
+    👑 Admin Demo
+  </button>
+
+  <div class="admin" id="adminPanel">
+
+    <h2>👑 Admin Panel</h2>
+
+    <p>Demo Controls</p>
+
+    <button onclick="addBalance()">
+      + Add 10 TON
     </button>
 
-    <div id="result">
-      🎉 Gift Opened!<br>
-      +25 TON (DEMO)
-    </div>
+    <button onclick="resetBalance()">
+      Reset Balance
+    </button>
+
+    <button onclick="closeAdmin()">
+      Close Admin
+    </button>
+
   </div>
 
 </div>
 
 <script>
-function openGift() {
-  document.getElementById("result").style.display = "block";
+
+let balance = 100;
+let running = false;
+
+function startRocket() {
+
+  if (running) return;
+
+  running = true;
+
+  let multiplier = 1.00;
+  let rocketHeight = 45;
+
+  document.getElementById("status").innerText =
+    "Rocket is flying...";
+
+  document.getElementById("startButton").disabled = true;
+
+  const timer = setInterval(() => {
+
+    multiplier += 0.05;
+
+    rocketHeight += 2;
+
+    document.getElementById("multiplier").innerText =
+      multiplier.toFixed(2) + "x";
+
+    document.getElementById("rocket").style.bottom =
+      rocketHeight + "px";
+
+    // Demo crash point
+    if (multiplier >= 3.00) {
+
+      clearInterval(timer);
+
+      document.getElementById("status").innerText =
+        "💥 Demo Rocket Finished!";
+
+      running = false;
+
+      document.getElementById("startButton").disabled = false;
+
+      setTimeout(resetRocket, 2000);
+    }
+
+  }, 120);
+
 }
+
+function resetRocket() {
+
+  document.getElementById("multiplier").innerText =
+    "1.00x";
+
+  document.getElementById("rocket").style.bottom =
+    "45px";
+
+  document.getElementById("status").innerText =
+    "Ready to start";
+}
+
+function showAdmin() {
+  document.getElementById("adminPanel").style.display =
+    "block";
+}
+
+function closeAdmin() {
+  document.getElementById("adminPanel").style.display =
+    "none";
+}
+
+function addBalance() {
+
+  balance += 10;document.getElementById("balance").innerText =
+    balance.toFixed(2) + " TON";
+}
+
+function resetBalance() {
+
+  balance = 100;
+
+  document.getElementById("balance").innerText =
+    balance.toFixed(2) + " TON";
+}
+
 </script>
 
 </body>
